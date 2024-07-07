@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'score_manager.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
@@ -9,21 +11,24 @@ import 'pages/reward_page.dart';
 import 'pages/leaderboard_page.dart';
 import 'pages/garden_page.dart';
 import 'pages/community_page.dart';
-import 'score_manager.dart'; // 추가
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ScoreManager()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '수자원공사 공모전 시범 앱',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
+      title: 'Water Saving Challenge',
+      initialRoute: '/home',
       routes: {
         '/home': (context) => HomePage(),
         '/login': (context) => LoginPage(),

@@ -1,42 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../score_manager.dart';
 
-class CommonLayout extends StatefulWidget {
+class CommonLayout extends StatelessWidget {
   final Widget child;
 
   CommonLayout({required this.child});
-
-  @override
-  _CommonLayoutState createState() => _CommonLayoutState();
-}
-
-class _CommonLayoutState extends State<CommonLayout> {
-  int totalPoints = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTotalPoints();
-  }
-
-  Future<void> _loadTotalPoints() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      totalPoints = prefs.getInt('totalPoints') ?? 0;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(child: widget.child),
+          Expanded(child: child),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '내 보유 포인트: $totalPoints',
-              style: TextStyle(fontSize: 16, color: Colors.black),
+            child: Consumer<ScoreManager>(
+              builder: (context, scoreManager, child) {
+                return Text(
+                  '내 보유 포인트: ${scoreManager.totalPoints}',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                );
+              },
             ),
           ),
         ],

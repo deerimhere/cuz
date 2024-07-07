@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 추가
+import 'package:lottie/lottie.dart'; // 추가
+import 'package:provider/provider.dart';
+import '../score_manager.dart';
 import 'common_layout.dart';
-import '../score_manager.dart'; // 추가
 
 class MissionPage extends StatefulWidget {
   @override
@@ -75,7 +76,8 @@ class _MissionPageState extends State<MissionPage> {
       missionStatus[mission] = true;
       confettiPoints = isMonthly ? 200 : 20;
     });
-    await ScoreManager.addPoints(confettiPoints); // 변경
+    await Provider.of<ScoreManager>(context, listen: false)
+        .addPoints(confettiPoints);
   }
 
   void _showConfetti() {

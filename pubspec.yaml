@@ -24,3 +24,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/animation_check.json
+    - assets/animation_correct.json
+    - assets/animation_wrong.json

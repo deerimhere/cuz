@@ -6,7 +6,7 @@ class ScoreManager {
     return prefs.getInt('totalPoints') ?? 0;
   }
 
-  static Future<void> updateTotalPoints(int points) async {
+  static Future<void> addPoints(int points) async {
     final prefs = await SharedPreferences.getInstance();
     int totalPoints = (prefs.getInt('totalPoints') ?? 0) + points;
     await prefs.setInt('totalPoints', totalPoints);

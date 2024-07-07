@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'common_layout.dart';
 import '../score_manager.dart';
 
@@ -105,7 +106,7 @@ class _QuizPageState extends State<QuizPage> {
       if (quizzes[currentQuestionIndex][2] == userAnswer) {
         score += 10;
         isCorrect = true;
-        ScoreManager.updateTotalPoints(10);
+        ScoreManager.addPoints(10);
       } else {
         isCorrect = false;
       }

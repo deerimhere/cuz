@@ -30,6 +30,13 @@ class ScoreManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setPoints(int points) async {
+    final prefs = await SharedPreferences.getInstance();
+    _totalPoints = points;
+    await prefs.setInt('totalPoints', _totalPoints);
+    notifyListeners();
+  }
+
   Future<int> getTotalPoints() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('totalPoints') ?? 0;

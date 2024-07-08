@@ -79,7 +79,29 @@ class _RewardPageState extends State<RewardPage> {
                         color: isSeed && isPurchased ? Colors.grey[300] : null,
                         child: ListTile(
                           leading: Icon(itemData.items[index].icon),
-                          title: Text(itemData.items[index].name),
+                          title: Row(
+                            children: [
+                              Text(
+                                itemData.items[index].name,
+                                style: TextStyle(
+                                  decoration: isSeed && isPurchased
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                ),
+                              ),
+                              if (isSeed && isPurchased)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    '매진',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                           trailing: Text('${itemData.items[index].price} 포인트'),
                           onTap: isSeed && isPurchased
                               ? null

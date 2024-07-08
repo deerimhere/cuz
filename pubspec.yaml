@@ -27,3 +27,10 @@ flutter:
     - assets/animation_check.json
     - assets/animation_correct.json
     - assets/animation_wrong.json
+    - assets/images/level1.png
+    - assets/images/level2.png
+    - assets/images/level3.png
+    - assets/images/level4.png
+    - assets/images/level5.png
+    - assets/images/level6.png
+    - assets/images/level7.png

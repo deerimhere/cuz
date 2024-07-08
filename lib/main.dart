@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
+        '/home': (context) => HomePage(), // 이 부분 추가
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
         '/garden': (context) => GardenPage(),

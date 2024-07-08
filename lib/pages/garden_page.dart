@@ -27,27 +27,27 @@ class GardenPage extends StatelessWidget {
                         if (treeManager.tree.level == 0)
                           Text(
                             '씨앗을 심어주세요!',
-                            style: TextStyle(fontSize: 24),
+                            style: TextStyle(fontSize: 20), // 글자 크기 조정
                           )
                         else ...[
-                          Text('나무 레벨: ${treeManager.tree.level}', style: TextStyle(fontSize: 24)),
-                          SizedBox(height: 20),
+                          Text('나무 레벨: ${treeManager.tree.level}', style: TextStyle(fontSize: 20)), // 글자 크기 조정
+                          SizedBox(height: 16),
                           Image.asset(
                             'assets/images/level${treeManager.tree.level}.png',
-                            height: 200,
-                            width: 200,
+                            height: 150, // 이미지 높이 조정
+                            width: 150, // 이미지 너비 조정
                           ),
-                          SizedBox(height: 20),
-                          Text('경험치: ${treeManager.tree.experience} / 3500', style: TextStyle(fontSize: 18)),
-                          SizedBox(height: 20),
+                          SizedBox(height: 16),
+                          Text('경험치: ${treeManager.tree.experience} / 3500', style: TextStyle(fontSize: 16)), // 글자 크기 조정
+                          SizedBox(height: 16),
                           Container(
-                            width: 300, // 경험치바의 길이를 조절합니다.
+                            width: 250, // 경험치바 너비 조절
                             child: LinearProgressIndicator(
                               value: treeManager.tree.experience / 3500,
-                              minHeight: 20,
+                              minHeight: 16, // 경험치바 높이 조절
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: treeManager.tree.level < 7 &&
                                     treeManager.tree.experience >= (treeManager.tree.level * 500) &&
@@ -57,15 +57,15 @@ class GardenPage extends StatelessWidget {
                                     itemData.useItem('진화!');
                                   }
                                 : null,
-                            child: Text('진화하기'),
+                            child: Text('진화하기', style: TextStyle(fontSize: 16)), // 버튼 글자 크기 조정
                           ),
                         ],
-                        SizedBox(height: 20),
+                        SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
                             treeManager.resetTree();
                           },
-                          child: Text('초기화하기'),
+                          child: Text('초기화하기', style: TextStyle(fontSize: 16)), // 버튼 글자 크기 조정
                         ),
                       ],
                     );
@@ -78,7 +78,7 @@ class GardenPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text('아이템 사용하기', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('아이템 사용하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), // 글자 크기 조정
                   SizedBox(height: 10),
                   Consumer<ItemData>(
                     builder: (context, itemData, child) {
@@ -110,7 +110,7 @@ class GardenPage extends StatelessWidget {
     return Column(
       children: [
         IconButton(
-          icon: Icon(icon, size: 40),
+          icon: Icon(icon, size: 32), // 아이콘 크기 조정
           onPressed: item.quantity > 0
               ? () {
                   if (isSeed) {
@@ -124,7 +124,7 @@ class GardenPage extends StatelessWidget {
                 }
               : null,
         ),
-        Text('$itemName (${item.quantity})'),
+        Text('$itemName (${item.quantity})', style: TextStyle(fontSize: 14)), // 글자 크기 조정
       ],
     );
   }

@@ -36,6 +36,9 @@ class _QuizPageState extends State<QuizPage> {
         selectedQuestions.add(questionIndex);
       }
     }
+    setState(() {
+      currentQuestionIndex = 0;
+    });
   }
 
   void _checkAnswer(String answer) {
@@ -111,27 +114,29 @@ class _QuizPageState extends State<QuizPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      quizzes[selectedQuestions[currentQuestionIndex]][1],
-                      style: TextStyle(fontSize: 20),
-                      textAlign: TextAlign.center,
+                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        quizzes[selectedQuestions[currentQuestionIndex]][1],
+                        style: TextStyle(fontSize: 20),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => _checkAnswer("O"),
-                        child: Text("O"),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _checkAnswer("X"),
-                        child: Text("X"),
-                      ),
-                    ],
-                  ),
+                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _checkAnswer("O"),
+                          child: Text("O"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _checkAnswer("X"),
+                          child: Text("X"),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

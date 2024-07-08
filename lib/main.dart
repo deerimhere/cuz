@@ -18,7 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final scoreManager = ScoreManager();
-  await scoreManager.setPoints(10000); // 초기화 시 10000 포인트 설정
+  await scoreManager.setPoints(100000); // 초기화 시 10000 포인트 설정
 
   final treeManager = TreeManager();
   await treeManager.loadTree();

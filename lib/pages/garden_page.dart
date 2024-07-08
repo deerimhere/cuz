@@ -49,16 +49,20 @@ class GardenPage extends StatelessWidget {
                           ),
                           SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: treeManager.tree.level < 7 &&
-                                    treeManager.tree.experience >= (treeManager.tree.level * 500) &&
-                                    evolveItem.quantity > 0
-                                ? () {
-                                    treeManager.evolve();
-                                    itemData.useItem('진화!');
-                                  }
-                                : () {
-                                    _showEvolveWarning(context);
-                                  },
+                            onPressed: () {
+                              if (treeManager.tree.level < 7 &&
+                                  treeManager.tree.experience >= (treeManager.tree.level * 500) &&
+                                  evolveItem.quantity > 0) {
+                                treeManager.evolve();
+                                itemData.useItem('진화!');
+                              } else {
+                                if (evolveItem.quantity == 0) {
+                                  _showNoEvolveItemWarning(context);
+                                } else {
+                                  _showEvolveWarning(context);
+                                }
+                              }
+                            },
                             child: Text('진화하기', style: TextStyle(fontSize: 16)), // 버튼 글자 크기 조정
                           ),
                         ],
@@ -118,11 +122,16 @@ class GardenPage extends StatelessWidget {
                   if (isSeed) {
                     treeManager.plantSeed();
                   } else if (isEvolve) {
-                    if (treeManager.tree.experience >= (treeManager.tree.level * 500)) {
+                    if (treeManager.tree.experience >= (treeManager.tree.level * 500) &&
+                        item.quantity > 0) {
                       treeManager.evolveWithItem();
                       itemData.useItem(itemName);
                     } else {
-                      _showEvolveWarning(context);
+                      if (item.quantity == 0) {
+                        _showNoEvolveItemWarning(context);
+                      } else {
+                        _showEvolveWarning(context);
+                      }
                     }
                   } else {
                     treeManager.addExperience(exp);
@@ -143,6 +152,26 @@ class GardenPage extends StatelessWidget {
         return AlertDialog(
           title: Text('경고'),
           content: Text('진화하기 위해서는 더 많은 경험치가 필요합니다.'),
+          actions: [
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNoEvolveItemWarning(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('경고'),
+          content: Text('진화 아이템이 없습니다.'),
           actions: [
             TextButton(
               child: Text('확인'),

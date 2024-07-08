@@ -19,6 +19,7 @@ class _QuizPageState extends State<QuizPage> {
   bool isCorrect = false;
   int correctAnswers = 0;
   int wrongAnswers = 0;
+  bool showResult = false;
 
   @override
   void initState() {
@@ -51,7 +52,7 @@ class _QuizPageState extends State<QuizPage> {
       answeredQuestions.add(selectedQuestions[currentQuestionIndex]);
     });
 
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(milliseconds: 1250), () {
       setState(() {
         showAnimation = false;
         if (answeredQuestions.length < 5) {
@@ -64,23 +65,27 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _showResultDialog() {
+    setState(() {
+      showResult = true;
+    });
+
     showDialog(
       context: context,
+      barrierDismissible: false, // 다이얼로그 밖을 터치해도 닫히지 않도록 설정
       builder: (context) => AlertDialog(
         title: Text("퀴즈 결과", textAlign: TextAlign.center),
         content: Text("맞은 문제: $correctAnswers\n틀린 문제: $wrongAnswers",
             textAlign: TextAlign.center),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed('/home');
-            },
-            child: Text("확인"),
-          ),
-        ],
       ),
     );
+
+    // 일정 시간 후 자동으로 홈으로 이동
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        showResult = false;
+      });
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
   }
 
   @override
@@ -92,31 +97,34 @@ class _QuizPageState extends State<QuizPage> {
         ),
         body: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    quizzes[selectedQuestions[currentQuestionIndex]][1],
-                    style: TextStyle(fontSize: 20),
-                    textAlign: TextAlign.center,
+            AbsorbPointer(
+              absorbing: showAnimation || showResult,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      quizzes[selectedQuestions[currentQuestionIndex]][1],
+                      style: TextStyle(fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _checkAnswer("O"),
-                      child: Text("O"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _checkAnswer("X"),
-                      child: Text("X"),
-                    ),
-                  ],
-                ),
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _checkAnswer("O"),
+                        child: Text("O"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _checkAnswer("X"),
+                        child: Text("X"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             if (showAnimation)
               Center(

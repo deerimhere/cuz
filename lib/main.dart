@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'score_manager.dart';
+import 'data.dart';
 import 'pages/home_page.dart';
-import 'pages/login_page.dart';
-import 'pages/signup_page.dart';
-import 'pages/water_usage_page.dart';
-import 'pages/mission_page.dart';
-import 'pages/quiz_page.dart';
 import 'pages/reward_page.dart';
-import 'pages/leaderboard_page.dart';
+import 'pages/quiz_page.dart';
 import 'pages/garden_page.dart';
-import 'pages/community_page.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ScoreManager()),
+        ChangeNotifierProvider(create: (context) => ScoreManager()),
+        ChangeNotifierProvider(create: (context) => ItemData()),
       ],
       child: MyApp(),
     ),
@@ -27,19 +23,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Water Saving Challenge',
-      initialRoute: '/home',
+      title: '퀴즈 앱',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: '/',
       routes: {
-        '/home': (context) => HomePage(),
-        '/login': (context) => LoginPage(),
-        '/signup': (context) => SignupPage(),
-        '/water_usage': (context) => WaterUsagePage(),
-        '/mission': (context) => MissionPage(),
+        '/': (context) => HomePage(),
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
-        '/leaderboard': (context) => LeaderboardPage(),
         '/garden': (context) => GardenPage(),
-        '/community': (context) => CommunityPage(),
       },
     );
   }

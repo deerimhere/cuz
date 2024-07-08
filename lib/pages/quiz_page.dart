@@ -20,6 +20,7 @@ class _QuizPageState extends State<QuizPage> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
   bool showResult = false;
+  bool isAnswering = false; // 추가
 
   @override
   void initState() {
@@ -38,7 +39,10 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _checkAnswer(String answer) {
+    if (isAnswering) return; // 추가: 중복 터치 방지
+
     setState(() {
+      isAnswering = true; // 추가: 터치 시작
       bool isAnswerCorrect =
           quizzes[selectedQuestions[currentQuestionIndex]][2] == answer;
       showAnimation = true;
@@ -52,9 +56,10 @@ class _QuizPageState extends State<QuizPage> {
       answeredQuestions.add(selectedQuestions[currentQuestionIndex]);
     });
 
-    Future.delayed(Duration(milliseconds: 1250), () {
+    Future.delayed(Duration(milliseconds: 1200), () {
       setState(() {
         showAnimation = false;
+        isAnswering = false; // 추가: 터치 종료
         if (answeredQuestions.length < 5) {
           currentQuestionIndex++;
         } else {
@@ -76,16 +81,20 @@ class _QuizPageState extends State<QuizPage> {
         title: Text("퀴즈 결과", textAlign: TextAlign.center),
         content: Text("맞은 문제: $correctAnswers\n틀린 문제: $wrongAnswers",
             textAlign: TextAlign.center),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // 다이얼로그 닫기
+              setState(() {
+                showResult = false;
+              });
+              Navigator.of(context).pushReplacementNamed('/'); // 홈으로 이동
+            },
+            child: Text('확인'),
+          ),
+        ],
       ),
     );
-
-    // 일정 시간 후 자동으로 홈으로 이동
-    Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        showResult = false;
-      });
-      Navigator.of(context).pushReplacementNamed('/home');
-    });
   }
 
   @override

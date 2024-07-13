@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysql_client/mysql_client.dart';
 import 'package:provider/provider.dart';
 import 'score_manager.dart';
 import 'data.dart';
@@ -42,6 +43,40 @@ class MyApp extends StatelessWidget {
       title: '퀴즈 앱',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'BMHANNA', // 글로벌 폰트 설정
+        textTheme: TextTheme(
+          displayLarge: TextStyle(
+              fontSize: 32.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          displayMedium: TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          displaySmall: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          headlineMedium: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          headlineSmall: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          titleLarge: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BMHANNA'),
+          titleMedium: TextStyle(fontSize: 16.0, fontFamily: 'BMHANNA'),
+          titleSmall: TextStyle(fontSize: 14.0, fontFamily: 'BMHANNA'),
+          bodyLarge: TextStyle(fontSize: 16.0, fontFamily: 'BMHANNA'),
+          bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'BMHANNA'),
+          labelLarge: TextStyle(fontSize: 16.0, fontFamily: 'BMHANNA'),
+          bodySmall: TextStyle(fontSize: 12.0, fontFamily: 'BMHANNA'),
+          labelSmall: TextStyle(fontSize: 10.0, fontFamily: 'BMHANNA'),
+        ),
       ),
       initialRoute: '/',
       routes: {

@@ -17,7 +17,7 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
   final TextEditingController _membersController = TextEditingController();
   final TextEditingController _waterUsageController = TextEditingController();
   int _members = 1; // 기본값
-  double _dailyWaterLimit = 306; // 하루 기준 물 사용량(L)
+  double _dailyWaterLimit = 198; // 하루 기준 물 사용량(L)
 
   @override
   void initState() {

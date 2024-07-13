@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sqflite: ^2.2.8
+  mysql_client: ^0.0.27
   cupertino_icons: ^1.0.6
   flare_flutter: ^3.0.0
   lottie: ^1.2.1
@@ -37,3 +39,7 @@ flutter:
     - assets/images/level7.png
     - assets/animation_harvest.json
     - assets/background.jpg  # 추가된 항목
+  fonts:
+    - family: BMHANNA
+      fonts:
+        - asset: assets/fonts/BMHANNAAir_ttf.ttf

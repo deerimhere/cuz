@@ -36,24 +36,30 @@ class _GardenPageState extends State<GardenPage> {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (treeManager.tree.level == 0)
-                              Text(
+                            if (treeManager.tree.level == 0) ...[
+                              Lottie.asset(
+                                'assets/animation_cry.json',
+                                width: 150,
+                                height: 150,
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
                                 '씨앗을 심어주세요!',
                                 style: TextStyle(fontSize: 20),
-                              )
-                            else ...[
+                              ),
+                            ] else ...[
                               Text('나무 레벨: ${treeManager.tree.level}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 16),
+                                  style: const TextStyle(fontSize: 20)),
+                              const SizedBox(height: 16),
                               Image.asset(
                                 'assets/images/level${treeManager.tree.level}.png',
                                 height: 150,
                                 width: 150,
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text('경험치: ${treeManager.tree.experience} / 3500',
-                                  style: TextStyle(fontSize: 16)),
-                              SizedBox(height: 16),
+                                  style: const TextStyle(fontSize: 16)),
+                              const SizedBox(height: 16),
                               Container(
                                 width: 250,
                                 child: LinearProgressIndicator(
@@ -61,7 +67,7 @@ class _GardenPageState extends State<GardenPage> {
                                   minHeight: 16,
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () {
                                   if (treeManager.tree.level >= 7) {
@@ -79,15 +85,15 @@ class _GardenPageState extends State<GardenPage> {
                                     }
                                   }
                                 },
-                                child: Text('진화하기',
+                                child: const Text('진화하기',
                                     style: TextStyle(fontSize: 16)),
                               ),
                             ],
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _harvest,
-                              child:
-                                  Text('수확하기', style: TextStyle(fontSize: 16)),
+                              child: const Text('수확하기',
+                                  style: TextStyle(fontSize: 16)),
                             ),
                           ],
                         );
@@ -95,15 +101,15 @@ class _GardenPageState extends State<GardenPage> {
                     ),
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Text('아이템 사용하기',
+                      const Text('아이템 사용하기',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Consumer<ItemData>(
                         builder: (context, itemData, child) {
                           return Wrap(
@@ -192,7 +198,8 @@ class _GardenPageState extends State<GardenPage> {
                   }
                 },
         ),
-        Text('$itemName (${item.quantity})', style: TextStyle(fontSize: 14)),
+        Text('$itemName (${item.quantity})',
+            style: const TextStyle(fontSize: 14)),
       ],
     );
   }
@@ -202,11 +209,11 @@ class _GardenPageState extends State<GardenPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('경고'),
-          content: Text('진화하기 위해서는 더 많은 경험치가 필요합니다.'),
+          title: const Text('경고'),
+          content: const Text('진화하기 위해서는 더 많은 경험치가 필요합니다.'),
           actions: [
             TextButton(
-              child: Text('확인'),
+              child: const Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -222,11 +229,11 @@ class _GardenPageState extends State<GardenPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('경고'),
-          content: Text('진화 아이템이 없습니다.'),
+          title: const Text('경고'),
+          content: const Text('진화 아이템이 없습니다.'),
           actions: [
             TextButton(
-              child: Text('확인'),
+              child: const Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -242,11 +249,11 @@ class _GardenPageState extends State<GardenPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('경고'),
-          content: Text('더 이상 진화할 수 없습니다.'),
+          title: const Text('경고'),
+          content: const Text('더 이상 진화할 수 없습니다.'),
           actions: [
             TextButton(
-              child: Text('확인'),
+              child: const Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -261,11 +268,11 @@ class _GardenPageState extends State<GardenPage> {
     setState(() {
       _showHarvestAnimation = true;
     });
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
       Provider.of<ScoreManager>(context, listen: false).addApple();
       Provider.of<TreeManager>(context, listen: false).resetTree();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('사과를 1개 수확했습니다!'),
       ));
     }

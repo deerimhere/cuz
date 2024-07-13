@@ -12,7 +12,7 @@ import 'pages/water_usage_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/login_page.dart';
 import 'pages/leaderboard_page.dart';
-import 'pages/profile_page.dart'; // 수정된 파일 이름
+import 'pages/profile_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
+        '/home': (context) => HomePage(), // 홈 경로 추가
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
         '/garden': (context) => GardenPage(),
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignupPage(),
         '/login': (context) => LoginPage(),
         '/leaderboard': (context) => LeaderboardPage(),
-        '/profile': (context) => ProfilePage(), // '/profile'로 수정
+        '/profile': (context) => ProfilePage(),
       },
     );
   }

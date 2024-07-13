@@ -33,30 +33,6 @@ class CommonLayout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                icon: Icon(Icons.home),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.login),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.person_add),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/water_usage');
-                },
-              ),
-              IconButton(
                 icon: Icon(Icons.assignment),
                 onPressed: () {
                   Navigator.pushNamed(context, '/mission');
@@ -69,9 +45,21 @@ class CommonLayout extends StatelessWidget {
                 },
               ),
               IconButton(
+                icon: Icon(Icons.local_florist),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/garden');
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.store),
                 onPressed: () {
                   Navigator.pushNamed(context, '/reward');
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.water_damage),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/water_usage');
                 },
               ),
               IconButton(
@@ -81,9 +69,15 @@ class CommonLayout extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.local_florist),
+                icon: Icon(Icons.person_add),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/garden');
+                  Navigator.pushNamed(context, '/signup');
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.login),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
                 },
               ),
               IconButton(

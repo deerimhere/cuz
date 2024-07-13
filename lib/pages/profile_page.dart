@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
 import '../models/tree_model.dart';
 import 'common_layout.dart';
 
@@ -32,11 +33,18 @@ class ProfilePage extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset(
-                              'assets/images/level${treeManager.tree.level}.png',
-                              width: 104, // 이미지 너비 30% 증가
-                              height: 104, // 이미지 높이 30% 증가
-                            ),
+                            if (treeManager.tree.level == 0)
+                              Lottie.asset(
+                                'assets/animation_cry.json',
+                                width: 104, // 이미지 너비 30% 증가
+                                height: 104, // 이미지 높이 30% 증가
+                              )
+                            else
+                              Image.asset(
+                                'assets/images/level${treeManager.tree.level}.png',
+                                width: 104, // 이미지 너비 30% 증가
+                                height: 104, // 이미지 높이 30% 증가
+                              ),
                             SizedBox(width: 15), // 간격 조정
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

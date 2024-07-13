@@ -39,8 +39,8 @@ class HomePage extends StatelessWidget {
                 _buildGridItem(
                     context, Icons.person_add, '회원가입', '/signup', '회원가입을 해주세요'),
                 _buildGridItem(context, Icons.login, '로그인', '/login', '로그인하세요'),
-                _buildGridItem(context, Icons.person, '프로필', '/profile',
-                    '프로필을 확인하세요'), // 프로필로 변경
+                _buildGridItem(
+                    context, Icons.person, '프로필', '/profile', '프로필을 확인하세요'),
               ],
             ),
           ),

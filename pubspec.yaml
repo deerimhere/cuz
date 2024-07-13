@@ -34,3 +34,5 @@ flutter:
     - assets/images/level5.png
     - assets/images/level6.png
     - assets/images/level7.png
+    - assets/animation_harvest.json
+    - assets/background.jpg  # 추가된 항목

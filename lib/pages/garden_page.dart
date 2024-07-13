@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 import '../data.dart';
 import '../models/tree_model.dart';
+import '../score_manager.dart';
 import 'common_layout.dart';
 
-class GardenPage extends StatelessWidget {
+class GardenPage extends StatefulWidget {
   const GardenPage({Key? key}) : super(key: key);
+
+  @override
+  _GardenPageState createState() => _GardenPageState();
+}
+
+class _GardenPageState extends State<GardenPage> {
+  bool _showHarvestAnimation = false;
 
   @override
   Widget build(BuildContext context) {
@@ -14,115 +23,154 @@ class GardenPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('가상 정원'),
         ),
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
-              child: Center(
-                child: Consumer2<TreeManager, ItemData>(
-                  builder: (context, treeManager, itemData, child) {
-                    final evolveItem = itemData.items.firstWhere((item) => item.name == '진화!');
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (treeManager.tree.level == 0)
-                          Text(
-                            '씨앗을 심어주세요!',
-                            style: TextStyle(fontSize: 20), // 글자 크기 조정
-                          )
-                        else ...[
-                          Text('나무 레벨: ${treeManager.tree.level}', style: TextStyle(fontSize: 20)), // 글자 크기 조정
-                          SizedBox(height: 16),
-                          Image.asset(
-                            'assets/images/level${treeManager.tree.level}.png',
-                            height: 150, // 이미지 높이 조정
-                            width: 150, // 이미지 너비 조정
-                          ),
-                          SizedBox(height: 16),
-                          Text('경험치: ${treeManager.tree.experience} / 3500', style: TextStyle(fontSize: 16)), // 글자 크기 조정
-                          SizedBox(height: 16),
-                          Container(
-                            width: 250, // 경험치바 너비 조절
-                            child: LinearProgressIndicator(
-                              value: treeManager.tree.experience / 3500,
-                              minHeight: 16, // 경험치바 높이 조절
+            Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Consumer2<TreeManager, ItemData>(
+                      builder: (context, treeManager, itemData, child) {
+                        final evolveItem = itemData.items
+                            .firstWhere((item) => item.name == '진화!');
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (treeManager.tree.level == 0)
+                              Text(
+                                '씨앗을 심어주세요!',
+                                style: TextStyle(fontSize: 20),
+                              )
+                            else ...[
+                              Text('나무 레벨: ${treeManager.tree.level}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 16),
+                              Image.asset(
+                                'assets/images/level${treeManager.tree.level}.png',
+                                height: 150,
+                                width: 150,
+                              ),
+                              SizedBox(height: 16),
+                              Text('경험치: ${treeManager.tree.experience} / 3500',
+                                  style: TextStyle(fontSize: 16)),
+                              SizedBox(height: 16),
+                              Container(
+                                width: 250,
+                                child: LinearProgressIndicator(
+                                  value: treeManager.tree.experience / 3500,
+                                  minHeight: 16,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (treeManager.tree.level >= 7) {
+                                    _showMaxLevelWarning(context);
+                                  } else if (treeManager.tree.experience >=
+                                          (treeManager.tree.level * 500) &&
+                                      evolveItem.quantity > 0) {
+                                    treeManager.evolve();
+                                    itemData.useItem('진화!');
+                                  } else {
+                                    if (evolveItem.quantity == 0) {
+                                      _showNoEvolveItemWarning(context);
+                                    } else {
+                                      _showEvolveWarning(context);
+                                    }
+                                  }
+                                },
+                                child: Text('진화하기',
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                            ],
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _harvest,
+                              child:
+                                  Text('수확하기', style: TextStyle(fontSize: 16)),
                             ),
-                          ),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (treeManager.tree.level < 7 &&
-                                  treeManager.tree.experience >= (treeManager.tree.level * 500) &&
-                                  evolveItem.quantity > 0) {
-                                treeManager.evolve();
-                                itemData.useItem('진화!');
-                              } else {
-                                if (evolveItem.quantity == 0) {
-                                  _showNoEvolveItemWarning(context);
-                                } else {
-                                  _showEvolveWarning(context);
-                                }
-                              }
-                            },
-                            child: Text('진화하기', style: TextStyle(fontSize: 16)), // 버튼 글자 크기 조정
-                          ),
-                        ],
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            treeManager.resetTree();
-                          },
-                          child: Text('초기화하기', style: TextStyle(fontSize: 16)), // 버튼 글자 크기 조정
-                        ),
-                      ],
-                    );
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Divider(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text('아이템 사용하기',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
+                      Consumer<ItemData>(
+                        builder: (context, itemData, child) {
+                          return Wrap(
+                            spacing: 10,
+                            children: [
+                              _buildItemButton(
+                                  context, itemData, '씨앗', Icons.grass, 0,
+                                  isSeed: true),
+                              _buildItemButton(
+                                  context, itemData, '물', Icons.water_drop, 10),
+                              _buildItemButton(
+                                  context, itemData, '비료', Icons.eco, 20),
+                              _buildItemButton(context, itemData, '영양제',
+                                  Icons.local_florist, 50),
+                              _buildItemButton(context, itemData, '진화!',
+                                  Icons.auto_awesome, 0,
+                                  isEvolve: true),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (_showHarvestAnimation)
+              Center(
+                child: Lottie.asset(
+                  'assets/animation_harvest.json', // 팡 터지는 애니메이션 파일 경로
+                  width: 200,
+                  height: 200,
+                  onLoaded: (composition) {
+                    Future.delayed(composition.duration, () {
+                      if (mounted) {
+                        setState(() {
+                          _showHarvestAnimation = false;
+                        });
+                      }
+                    });
                   },
                 ),
               ),
-            ),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text('아이템 사용하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), // 글자 크기 조정
-                  SizedBox(height: 10),
-                  Consumer<ItemData>(
-                    builder: (context, itemData, child) {
-                      return Wrap(
-                        spacing: 10,
-                        children: [
-                          _buildItemButton(context, itemData, '씨앗', Icons.grass, 0, isSeed: true),
-                          _buildItemButton(context, itemData, '물', Icons.water_drop, 10),
-                          _buildItemButton(context, itemData, '비료', Icons.eco, 20),
-                          _buildItemButton(context, itemData, '영양제', Icons.local_florist, 50),
-                          _buildItemButton(context, itemData, '진화!', Icons.auto_awesome, 0, isEvolve: true),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildItemButton(BuildContext context, ItemData itemData, String itemName, IconData icon, int exp,
+  Widget _buildItemButton(BuildContext context, ItemData itemData,
+      String itemName, IconData icon, int exp,
       {bool isEvolve = false, bool isSeed = false}) {
     final treeManager = Provider.of<TreeManager>(context, listen: false);
     final item = itemData.items.firstWhere((item) => item.name == itemName);
     return Column(
       children: [
         IconButton(
-          icon: Icon(icon, size: 32), // 아이콘 크기 조정
+          icon: Icon(icon, size: 32),
           onPressed: item.quantity > 0
               ? () {
                   if (isSeed) {
                     treeManager.plantSeed();
                   } else if (isEvolve) {
-                    if (treeManager.tree.experience >= (treeManager.tree.level * 500) &&
+                    if (treeManager.tree.level >= 7) {
+                      _showMaxLevelWarning(context);
+                    } else if (treeManager.tree.experience >=
+                            (treeManager.tree.level * 500) &&
                         item.quantity > 0) {
                       treeManager.evolveWithItem();
                       itemData.useItem(itemName);
@@ -138,9 +186,13 @@ class GardenPage extends StatelessWidget {
                     itemData.useItem(itemName);
                   }
                 }
-              : null,
+              : () {
+                  if (isEvolve) {
+                    _showNoEvolveItemWarning(context);
+                  }
+                },
         ),
-        Text('$itemName (${item.quantity})', style: TextStyle(fontSize: 14)), // 글자 크기 조정
+        Text('$itemName (${item.quantity})', style: TextStyle(fontSize: 14)),
       ],
     );
   }
@@ -183,5 +235,39 @@ class GardenPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showMaxLevelWarning(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('경고'),
+          content: Text('더 이상 진화할 수 없습니다.'),
+          actions: [
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _harvest() async {
+    setState(() {
+      _showHarvestAnimation = true;
+    });
+    await Future.delayed(Duration(seconds: 2));
+    if (mounted) {
+      Provider.of<ScoreManager>(context, listen: false).addApple();
+      Provider.of<TreeManager>(context, listen: false).resetTree();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('사과를 1개 수확했습니다!'),
+      ));
+    }
   }
 }

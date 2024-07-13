@@ -69,7 +69,7 @@ class CommonLayout extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.redeem),
+                icon: Icon(Icons.store),
                 onPressed: () {
                   Navigator.pushNamed(context, '/reward');
                 },
@@ -87,9 +87,9 @@ class CommonLayout extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.forum),
+                icon: Icon(Icons.person),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/community');
+                  Navigator.pushNamed(context, '/profile'); // '/profile'로 수정
                 },
               ),
             ],

@@ -12,13 +12,13 @@ import 'pages/water_usage_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/login_page.dart';
 import 'pages/leaderboard_page.dart';
-import 'pages/community_page.dart';
+import 'pages/profile_page.dart'; // 수정된 파일 이름
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final scoreManager = ScoreManager();
-  await scoreManager.setPoints(100000); // 초기화 시 10000 포인트 설정
+  await scoreManager.setPoints(10000); // 초기화 시 10000 포인트 설정
 
   final treeManager = TreeManager();
   await treeManager.loadTree();
@@ -46,7 +46,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/home': (context) => HomePage(), // 이 부분 추가
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
         '/garden': (context) => GardenPage(),
@@ -55,7 +54,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignupPage(),
         '/login': (context) => LoginPage(),
         '/leaderboard': (context) => LeaderboardPage(),
-        '/community': (context) => CommunityPage(),
+        '/profile': (context) => ProfilePage(), // '/profile'로 수정
       },
     );
   }

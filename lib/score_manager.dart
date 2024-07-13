@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'user_score.dart';
 
 class ScoreManager extends ChangeNotifier {
   int _totalPoints = 0;
   int _appleCount = 0;
+  List<UserScore> _leaderboard = [];
 
   int get totalPoints => _totalPoints;
   int get appleCount => _appleCount;
+  List<UserScore> get leaderboard => _leaderboard;
 
   Future<void> setPoints(int points) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,6 +50,28 @@ class ScoreManager extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _totalPoints = prefs.getInt('totalPoints') ?? 0;
     _appleCount = prefs.getInt('appleCount') ?? 0;
+    notifyListeners();
+  }
+
+  List<UserScore> getLeaderboard() {
+    return _leaderboard;
+  }
+
+  void updateLeaderboard(List<UserScore> leaderboard) {
+    _leaderboard = leaderboard;
+    notifyListeners();
+  }
+
+  // 임의의 데이터를 추가하는 메서드
+  void generateMockData() {
+    _leaderboard = [
+      UserScore('뽀짝한 지민이', 1500, 10),
+      UserScore('그지같은 상욱이', 1400, 8),
+      UserScore('잘생긴 범준이', 1300, 7),
+      UserScore('붙잡힌 병현이', 1200, 5),
+      UserScore('User5', 1100, 3),
+      UserScore('User6', 1000, 2),
+    ];
     notifyListeners();
   }
 }

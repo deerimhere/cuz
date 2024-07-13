@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mysql_client/mysql_client.dart';
 import 'package:provider/provider.dart';
 import 'score_manager.dart';
 import 'data.dart';
@@ -10,10 +9,10 @@ import 'pages/quiz_page.dart';
 import 'pages/garden_page.dart';
 import 'pages/mission_page.dart';
 import 'pages/water_usage_page.dart';
-import 'pages/signup_page.dart';
-import 'pages/login_page.dart';
 import 'pages/leaderboard_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/login_page.dart';
+import 'pages/map_page.dart'; // 지도 페이지 임포트
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,8 +86,8 @@ class MyApp extends StatelessWidget {
         '/garden': (context) => GardenPage(),
         '/mission': (context) => MissionPage(),
         '/water_usage': (context) => WaterUsagePage(),
-        '/signup': (context) => SignupPage(),
-        '/login': (context) => LoginPage(),
+        '/signup': (context) => MapPage(), // 회원가입 경로를 지도 페이지로 변경
+        '/login': (context) => LoginSignupPage(),
         '/leaderboard': (context) => LeaderboardPage(),
         '/profile': (context) => ProfilePage(),
       },

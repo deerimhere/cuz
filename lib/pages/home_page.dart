@@ -36,8 +36,8 @@ class HomePage extends StatelessWidget {
                     '/water_usage', '물 사용량을 확인하세요'),
                 _buildGridItem(context, Icons.leaderboard, '리더보드',
                     '/leaderboard', '리더보드를 확인하세요'),
-                _buildGridItem(
-                    context, Icons.person_add, '회원가입', '/signup', '회원가입을 해주세요'),
+                _buildGridItem(context, Icons.map, '지도', '/signup',
+                    '지도를 확인하세요'), // 아이콘과 라벨 변경
                 _buildGridItem(context, Icons.login, '로그인', '/login', '로그인하세요'),
                 _buildGridItem(
                     context, Icons.person, '프로필', '/profile', '프로필을 확인하세요'),

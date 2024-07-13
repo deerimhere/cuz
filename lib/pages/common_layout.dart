@@ -77,9 +77,9 @@ class CommonLayout extends StatelessWidget {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.person_add, size: 20),
+                  icon: Icon(Icons.map, size: 20), // 아이콘 변경
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
+                    Navigator.pushNamed(context, '/signup'); // 경로는 그대로 둡니다
                   },
                 ),
                 IconButton(

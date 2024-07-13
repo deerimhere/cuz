@@ -6,10 +6,6 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('홈'),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset('assets/k_water_logo.jpg'), // 로고 이미지 추가
-        ),
       ),
       body: Stack(
         children: [
@@ -43,8 +39,8 @@ class HomePage extends StatelessWidget {
                 _buildGridItem(
                     context, Icons.person_add, '회원가입', '/signup', '회원가입을 해주세요'),
                 _buildGridItem(context, Icons.login, '로그인', '/login', '로그인하세요'),
-                _buildGridItem(context, Icons.person, '프로필', '/profile',
-                    '프로필을 확인하세요'), // 프로필로 변경
+                _buildGridItem(
+                    context, Icons.person, '프로필', '/profile', '프로필을 확인하세요'),
               ],
             ),
           ),

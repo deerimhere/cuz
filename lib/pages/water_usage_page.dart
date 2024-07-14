@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
+<<<<<<< HEAD
 import 'package:intl/intl.dart'; // 날짜 형식 사용
 import 'package:cloud_firestore/cloud_firestore.dart';
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 import '../score_manager.dart';
 import 'common_layout.dart';
 
@@ -19,15 +22,17 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
   final TextEditingController _waterUsageController = TextEditingController();
   int _members = 1; // 기본값
   double _dailyWaterLimit = 198; // 하루 기준 물 사용량(L)
+<<<<<<< HEAD
   String? _lastRecordedDate; // 마지막 기록된 날짜
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String _userId = "user-id"; // 실제 유저 ID를 여기에 설정
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 
   @override
   void initState() {
     super.initState();
     _loadMembers();
-    _loadLastRecordedDate(); // 마지막 기록된 날짜 로드
   }
 
   Future<void> _loadMembers() async {
@@ -39,6 +44,7 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
     });
   }
 
+<<<<<<< HEAD
   Future<void> _loadLastRecordedDate() async {
     DocumentSnapshot snapshot =
         await _firestore.collection('users').doc(_userId).get();
@@ -47,6 +53,8 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
     });
   }
 
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
   Future<void> _saveMembers() async {
     if (_formKey.currentState!.validate()) {
       await _firestore.collection('users').doc(_userId).set({
@@ -60,6 +68,7 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
 
   Future<void> _saveWaterUsage() async {
     if (_formKey.currentState!.validate()) {
+<<<<<<< HEAD
       String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
       if (_lastRecordedDate == today) {
@@ -67,6 +76,9 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
         return;
       }
 
+=======
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
       double waterUsage = double.parse(_waterUsageController.text);
       double perPersonUsage = waterUsage / _members;
 
@@ -83,9 +95,12 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
         points = 10;
       }
 
+<<<<<<< HEAD
       await _firestore.collection('users').doc(_userId).set({
         'lastRecordedDate': today,
       }, SetOptions(merge: true));
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
       Provider.of<ScoreManager>(context, listen: false).addPoints(points);
       _showDialogWithAnimation(message);
     }
@@ -114,25 +129,6 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
               Text(message, textAlign: TextAlign.center),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void _showDialogWithMessage(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(message, textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: Text('확인'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );

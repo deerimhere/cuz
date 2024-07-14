@@ -37,61 +37,61 @@ class CommonLayout extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.home, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    Navigator.pushNamed(context, '/home');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.assignment, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/mission');
+                    Navigator.pushNamed(context, '/mission');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.quiz, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/quiz');
+                    Navigator.pushNamed(context, '/quiz');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.local_florist, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/garden');
+                    Navigator.pushNamed(context, '/garden');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.store, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/reward');
+                    Navigator.pushNamed(context, '/reward');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.water_damage, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/water_usage');
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.map, size: 20),
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/map');
+                    Navigator.pushNamed(context, '/water_usage');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.leaderboard, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/leaderboard');
+                    Navigator.pushNamed(context, '/leaderboard');
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.map, size: 20), // 아이콘 변경
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup'); // 경로는 그대로 둡니다
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.login, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.pushNamed(context, '/login');
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.person, size: 20),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/profile');
+                    Navigator.pushNamed(context, '/profile');
                   },
                 ),
               ],

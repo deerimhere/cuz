@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+<<<<<<< HEAD
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 import '../score_manager.dart';
 import 'common_layout.dart';
-import '../data/quiz_data.dart';
+import '../data/quiz_data.dart'; // 추가
 import 'dart:math';
 
 class QuizPage extends StatefulWidget {
@@ -21,14 +24,19 @@ class _QuizPageState extends State<QuizPage> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
   bool showResult = false;
+<<<<<<< HEAD
   bool isAnswering = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+=======
+  bool isAnswering = false; // 추가
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 
   @override
   void initState() {
     super.initState();
     _selectRandomQuestions();
+<<<<<<< HEAD
     _checkFirstVisit();
   }
 
@@ -62,6 +70,8 @@ class _QuizPageState extends State<QuizPage> {
         );
       },
     );
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
   }
 
   void _selectRandomQuestions() {
@@ -77,11 +87,16 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
+<<<<<<< HEAD
   void _checkAnswer(String answer) async {
     if (isAnswering) return;
+=======
+  void _checkAnswer(String answer) {
+    if (isAnswering) return; // 추가: 중복 터치 방지
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 
     setState(() {
-      isAnswering = true;
+      isAnswering = true; // 추가: 터치 시작
       bool isAnswerCorrect =
           quizzes[selectedQuestions[currentQuestionIndex]][2] == answer;
       showAnimation = true;
@@ -98,7 +113,7 @@ class _QuizPageState extends State<QuizPage> {
     await Future.delayed(Duration(milliseconds: 1200), () {
       setState(() {
         showAnimation = false;
-        isAnswering = false;
+        isAnswering = false; // 추가: 터치 종료
         if (answeredQuestions.length < 5) {
           currentQuestionIndex++;
         } else {
@@ -115,7 +130,7 @@ class _QuizPageState extends State<QuizPage> {
 
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: false, // 다이얼로그 밖을 터치해도 닫히지 않도록 설정
       builder: (context) => AlertDialog(
         title: Text("퀴즈 결과", textAlign: TextAlign.center),
         content: Text("맞은 문제: $correctAnswers\n틀린 문제: $wrongAnswers",
@@ -123,11 +138,11 @@ class _QuizPageState extends State<QuizPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // 다이얼로그 닫기
               setState(() {
                 showResult = false;
               });
-              Navigator.of(context).pushReplacementNamed('/');
+              Navigator.of(context).pushReplacementNamed('/'); // 홈으로 이동
             },
             child: Text('확인'),
           ),
@@ -150,8 +165,7 @@ class _QuizPageState extends State<QuizPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (quizzes.isNotEmpty &&
-                      currentQuestionIndex < quizzes.length)
+                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
@@ -160,8 +174,7 @@ class _QuizPageState extends State<QuizPage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  if (quizzes.isNotEmpty &&
-                      currentQuestionIndex < quizzes.length)
+                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -184,8 +197,8 @@ class _QuizPageState extends State<QuizPage> {
                   isCorrect
                       ? 'assets/animation_correct.json'
                       : 'assets/animation_wrong.json',
-                  width: isCorrect ? 200 : 100,
-                  height: isCorrect ? 200 : 100,
+                  width: isCorrect ? 200 : 100, // 조건에 따라 크기 변경
+                  height: isCorrect ? 200 : 100, // 조건에 따라 크기 변경
                   animate: true,
                 ),
               ),

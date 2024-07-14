@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart'; // 날짜 형식 사용
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../score_manager.dart';
 import 'common_layout.dart';
 
@@ -20,6 +20,8 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
   int _members = 1; // 기본값
   double _dailyWaterLimit = 198; // 하루 기준 물 사용량(L)
   String? _lastRecordedDate; // 마지막 기록된 날짜
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String _userId = "user-id"; // 실제 유저 ID를 여기에 설정
 
   @override
   void initState() {
@@ -29,24 +31,27 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
   }
 
   Future<void> _loadMembers() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(_userId).get();
     setState(() {
-      _members = prefs.getInt('members') ?? 1;
+      _members = snapshot['members'] ?? 1;
       _membersController.text = _members.toString();
     });
   }
 
   Future<void> _loadLastRecordedDate() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(_userId).get();
     setState(() {
-      _lastRecordedDate = prefs.getString('lastRecordedDate');
+      _lastRecordedDate = snapshot['lastRecordedDate'];
     });
   }
 
   Future<void> _saveMembers() async {
     if (_formKey.currentState!.validate()) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('members', int.parse(_membersController.text));
+      await _firestore.collection('users').doc(_userId).set({
+        'members': int.parse(_membersController.text),
+      }, SetOptions(merge: true));
       setState(() {
         _members = int.parse(_membersController.text);
       });
@@ -55,7 +60,6 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
 
   Future<void> _saveWaterUsage() async {
     if (_formKey.currentState!.validate()) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
       if (_lastRecordedDate == today) {
@@ -79,7 +83,9 @@ class _WaterUsagePageState extends State<WaterUsagePage> {
         points = 10;
       }
 
-      await prefs.setString('lastRecordedDate', today);
+      await _firestore.collection('users').doc(_userId).set({
+        'lastRecordedDate': today,
+      }, SetOptions(merge: true));
       Provider.of<ScoreManager>(context, listen: false).addPoints(points);
       _showDialogWithAnimation(message);
     }

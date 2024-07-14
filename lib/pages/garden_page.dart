@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data.dart';
 import '../models/tree_model.dart';
 import '../score_manager.dart';
@@ -16,6 +16,7 @@ class GardenPage extends StatefulWidget {
 
 class _GardenPageState extends State<GardenPage> {
   bool _showHarvestAnimation = false;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -24,12 +25,18 @@ class _GardenPageState extends State<GardenPage> {
   }
 
   Future<void> _checkFirstVisit() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool isFirstVisit = prefs.getBool('isFirstGardenVisit') ?? true;
+    String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(userId).get();
+    Map<String, dynamic>? data =
+        snapshot.data() as Map<String, dynamic>?; // 여기서 캐스팅을 추가합니다.
+    bool isFirstVisit = data?['isFirstGardenVisit'] ?? true;
 
     if (isFirstVisit) {
       _showIntroDialogs();
-      await prefs.setBool('isFirstGardenVisit', false);
+      await _firestore.collection('users').doc(userId).set({
+        'isFirstGardenVisit': false,
+      }, SetOptions(merge: true));
     }
   }
 

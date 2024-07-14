@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'user_score.dart';
 
 class ScoreManager extends ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   int _totalPoints = 0;
   int _appleCount = 0;
   List<UserScore> _leaderboard = [];
@@ -12,49 +13,102 @@ class ScoreManager extends ChangeNotifier {
   List<UserScore> get leaderboard => _leaderboard;
 
   Future<void> setPoints(int points) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('totalPoints', points);
-    _totalPoints = points;
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      await _firestore.collection('users').doc(userId).set({
+        'totalPoints': points,
+      }, SetOptions(merge: true));
+      _totalPoints = points;
+      notifyListeners();
+    } catch (e) {
+      print("Failed to set points: $e");
+    }
   }
 
   Future<void> addPoints(int points) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _totalPoints += points;
-    await prefs.setInt('totalPoints', _totalPoints);
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      _totalPoints += points;
+      await _firestore.collection('users').doc(userId).update({
+        'totalPoints': _totalPoints,
+      });
+      notifyListeners();
+    } catch (e) {
+      print("Failed to add points: $e");
+    }
   }
 
   Future<void> subtractPoints(int points) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _totalPoints -= points;
-    await prefs.setInt('totalPoints', _totalPoints);
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      _totalPoints -= points;
+      await _firestore.collection('users').doc(userId).update({
+        'totalPoints': _totalPoints,
+      });
+      notifyListeners();
+    } catch (e) {
+      print("Failed to subtract points: $e");
+    }
   }
 
   Future<void> setAppleCount(int count) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('appleCount', count);
-    _appleCount = count;
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      await _firestore.collection('users').doc(userId).set({
+        'appleCount': count,
+      }, SetOptions(merge: true));
+      _appleCount = count;
+      notifyListeners();
+    } catch (e) {
+      print("Failed to set apple count: $e");
+    }
   }
 
   Future<void> addApple() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _appleCount += 1;
-    await prefs.setInt('appleCount', _appleCount);
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      _appleCount += 1;
+      await _firestore.collection('users').doc(userId).update({
+        'appleCount': _appleCount,
+      });
+      notifyListeners();
+    } catch (e) {
+      print("Failed to add apple: $e");
+    }
   }
 
   Future<void> loadScoreData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _totalPoints = prefs.getInt('totalPoints') ?? 0;
-    _appleCount = prefs.getInt('appleCount') ?? 0;
-    notifyListeners();
+    try {
+      String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+      DocumentSnapshot snapshot =
+          await _firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      _totalPoints = data?['totalPoints'] ?? 0;
+      _appleCount = data?['appleCount'] ?? 0;
+      notifyListeners();
+    } catch (e) {
+      print("Failed to load score data: $e");
+    }
   }
 
-  List<UserScore> getLeaderboard() {
-    return _leaderboard;
+  Future<void> loadLeaderboard() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('leaderboard')
+          .orderBy('score', descending: true)
+          .get();
+      _leaderboard = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return UserScore(
+          data['name'],
+          data['score'],
+          data['apples'],
+        );
+      }).toList();
+      notifyListeners();
+    } catch (e) {
+      print("Failed to load leaderboard: $e");
+    }
   }
 
   void updateLeaderboard(List<UserScore> leaderboard) {

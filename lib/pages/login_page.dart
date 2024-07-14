@@ -9,12 +9,10 @@ class LoginSignupPage extends StatefulWidget {
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _loginFormKey = GlobalKey<FormState>();
   final _signupFormKey = GlobalKey<FormState>();
-  final TextEditingController _loginUsernameController =
-      TextEditingController();
+  final TextEditingController _loginEmailController = TextEditingController();
   final TextEditingController _loginPasswordController =
       TextEditingController();
-  final TextEditingController _signupUsernameController =
-      TextEditingController();
+  final TextEditingController _signupEmailController = TextEditingController();
   final TextEditingController _signupPasswordController =
       TextEditingController();
   bool _isLogin = true;
@@ -23,7 +21,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Future<void> _login() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _loginUsernameController.text,
+        email: _loginEmailController.text,
         password: _loginPasswordController.text,
       );
       setState(() {
@@ -40,7 +38,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Future<void> _signup() async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _signupUsernameController.text,
+        email: _signupEmailController.text,
         password: _signupPasswordController.text,
       );
       setState(() {
@@ -81,7 +79,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       child: Column(
         children: <Widget>[
           TextFormField(
-            controller: _loginUsernameController,
+            controller: _loginEmailController,
             decoration: InputDecoration(labelText: '이메일'),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -125,7 +123,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       child: Column(
         children: <Widget>[
           TextFormField(
-            controller: _signupUsernameController,
+            controller: _signupEmailController,
             decoration: InputDecoration(labelText: '이메일'),
             validator: (value) {
               if (value == null || value.isEmpty) {

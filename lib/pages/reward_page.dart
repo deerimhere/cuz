@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../score_manager.dart';
 import '../data.dart';
 import 'common_layout.dart';
@@ -10,12 +11,15 @@ class RewardPage extends StatefulWidget {
 }
 
 class _RewardPageState extends State<RewardPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String _userId = "user-id"; // 실제 유저 ID를 여기에 설정
+
   Future<void> _purchaseItem(int index) async {
     final scoreManager = Provider.of<ScoreManager>(context, listen: false);
     final itemData = Provider.of<ItemData>(context, listen: false);
     if (scoreManager.totalPoints >= itemData.items[index].price) {
-      scoreManager.subtractPoints(itemData.items[index].price);
-      itemData.purchaseItem(index);
+      await scoreManager.subtractPoints(itemData.items[index].price);
+      await itemData.purchaseItem(index);
       _showPurchaseSuccessDialog(itemData.items[index].name);
     } else {
       _showInsufficientPointsDialog();
@@ -118,7 +122,9 @@ class _RewardPageState extends State<RewardPage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text('구매한 아이템', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('구매한 아이템',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
                   Consumer<ItemData>(
                     builder: (context, itemData, child) {

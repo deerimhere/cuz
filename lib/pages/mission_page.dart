@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // 추가
-import 'package:lottie/lottie.dart'; // 추가
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../score_manager.dart';
 import 'common_layout.dart';
@@ -11,6 +11,9 @@ class MissionPage extends StatefulWidget {
 }
 
 class _MissionPageState extends State<MissionPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+
   final List<Map<String, String>> dailyMissions = [
     {'title': '짧은 샤워하기', 'description': '샤워 시간을 5분 이하로 줄이세요.'},
     {'title': '양치질 시 물컵 사용하기', 'description': '양치질을 할 때 컵에 물을 받아서 사용하세요.'},
@@ -47,37 +50,50 @@ class _MissionPageState extends State<MissionPage> {
   }
 
   Future<void> _loadMissionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final today = DateTime.now().toIso8601String().split('T')[0];
-    final currentMonth = DateTime.now().month;
-    setState(() {
-      missionStatus = {
-        '짧은 샤워하기': prefs.getString('짧은 샤워하기') == today,
-        '양치질 시 물컵 사용하기': prefs.getString('양치질 시 물컵 사용하기') == today,
-        '빨래 모아서 한 번에 하기': prefs.getString('빨래 모아서 한 번에 하기') == today,
-        '설거지 물 받아서 사용하기': prefs.getString('설거지 물 받아서 사용하기') == today,
-        '수도꼭지 점검하기': prefs.getString('수도꼭지 점검하기') == today,
-        '샤워 필터 사용하기': prefs.getString('샤워 필터 사용하기') == today,
-        '변기에 물병 넣기': prefs.getInt('변기에 물병 넣기') == currentMonth,
-      };
-    });
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      final today = DateTime.now().toIso8601String().split('T')[0];
+      final currentMonth = DateTime.now().month;
+
+      setState(() {
+        missionStatus = {
+          '짧은 샤워하기': data?['missions']['짧은 샤워하기'] == today,
+          '양치질 시 물컵 사용하기': data?['missions']['양치질 시 물컵 사용하기'] == today,
+          '빨래 모아서 한 번에 하기': data?['missions']['빨래 모아서 한 번에 하기'] == today,
+          '설거지 물 받아서 사용하기': data?['missions']['설거지 물 받아서 사용하기'] == today,
+          '수도꼭지 점검하기': data?['missions']['수도꼭지 점검하기'] == today,
+          '샤워 필터 사용하기': data?['missions']['샤워 필터 사용하기'] == today,
+          '변기에 물병 넣기': data?['missions']['변기에 물병 넣기'] == currentMonth,
+        };
+      });
+    } catch (e) {
+      print("Failed to load mission status: $e");
+    }
   }
 
   Future<void> _setMissionStatus(String mission, bool isMonthly) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (isMonthly) {
-      final currentMonth = DateTime.now().month;
-      await prefs.setInt(mission, currentMonth);
-    } else {
+    try {
       final today = DateTime.now().toIso8601String().split('T')[0];
-      await prefs.setString(mission, today);
+      final currentMonth = DateTime.now().month;
+
+      await _firestore.collection('users').doc(userId).set({
+        'missions': {
+          mission: isMonthly ? currentMonth : today,
+        }
+      }, SetOptions(merge: true));
+
+      setState(() {
+        missionStatus[mission] = true;
+        confettiPoints = isMonthly ? 200 : 20;
+      });
+      await Provider.of<ScoreManager>(context, listen: false)
+          .addPoints(confettiPoints);
+      _showConfetti();
+    } catch (e) {
+      print("Failed to set mission status: $e");
     }
-    setState(() {
-      missionStatus[mission] = true;
-      confettiPoints = isMonthly ? 200 : 20;
-    });
-    await Provider.of<ScoreManager>(context, listen: false)
-        .addPoints(confettiPoints);
   }
 
   void _showConfetti() {

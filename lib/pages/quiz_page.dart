@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
 import '../score_manager.dart';
 import 'common_layout.dart';
 import '../data/quiz_data.dart';
@@ -22,6 +22,8 @@ class _QuizPageState extends State<QuizPage> {
   int wrongAnswers = 0;
   bool showResult = false;
   bool isAnswering = false;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String userId = "user-id"; // 실제 유저 ID를 여기에 설정
 
   @override
   void initState() {
@@ -31,12 +33,14 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _checkFirstVisit() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool isFirstVisit = prefs.getBool('isFirstQuizVisit') ?? true;
-
-    if (isFirstVisit) {
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(userId).get();
+    if (!snapshot.exists ||
+        !(snapshot.data() as Map<String, dynamic>)['isFirstQuizVisit']) {
       _showIntroDialog();
-      await prefs.setBool('isFirstQuizVisit', false);
+      await _firestore.collection('users').doc(userId).set({
+        'isFirstQuizVisit': false,
+      }, SetOptions(merge: true));
     }
   }
 
@@ -61,7 +65,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _selectRandomQuestions() {
-    Random random = new Random();
+    Random random = Random();
     while (selectedQuestions.length < 5) {
       int questionIndex = random.nextInt(quizzes.length);
       if (!selectedQuestions.contains(questionIndex)) {
@@ -73,7 +77,7 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     if (isAnswering) return;
 
     setState(() {
@@ -91,7 +95,7 @@ class _QuizPageState extends State<QuizPage> {
       answeredQuestions.add(selectedQuestions[currentQuestionIndex]);
     });
 
-    Future.delayed(Duration(milliseconds: 1200), () {
+    await Future.delayed(Duration(milliseconds: 1200), () {
       setState(() {
         showAnimation = false;
         isAnswering = false;

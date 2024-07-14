@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
 import '../models/tree_model.dart';
 import 'common_layout.dart';
 
 class ProfilePage extends StatelessWidget {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String userId = "user-id"; // 실제 유저 ID를 여기에 설정
+
   Future<String?> _getNickname() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('nickname');
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(userId).get();
+    return (snapshot.data() as Map<String, dynamic>?)?['nickname'];
   }
 
   @override

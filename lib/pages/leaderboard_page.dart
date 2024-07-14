@@ -10,15 +10,20 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Map<String, dynamic>>> _fetchTopUsers() async {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('users')
-        .orderBy('score', descending: true)
-        .limit(3)
-        .get();
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .orderBy('score', descending: true)
+          .limit(3)
+          .get();
 
-    return querySnapshot.docs
-        .map((doc) => {"name": doc["name"], "score": doc["score"]})
-        .toList();
+      return querySnapshot.docs
+          .map((doc) => {"name": doc["name"], "score": doc["score"]})
+          .toList();
+    } catch (e) {
+      print("Failed to fetch top users: $e");
+      return [];
+    }
   }
 
   @override

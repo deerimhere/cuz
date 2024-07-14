@@ -202,7 +202,6 @@ class _MapPageState extends State<MapPage> {
         options: MapOptions(
           center: LatLng(36.5, 127.5),
           zoom: 7.0,
-          interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
           onTap: (tapPosition, point) {
             _showWaterStressDialog(point);
           },

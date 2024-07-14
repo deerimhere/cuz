@@ -13,7 +13,6 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   List<Polygon> _polygons = [];
-  List<Marker> _markers = [];
   List<LatLng> _csvPoints = [];
 
   @override
@@ -31,20 +30,35 @@ class _MapPageState extends State<MapPage> {
     List<Polygon> polygons = [];
 
     for (var feature in data['features']) {
-      List<LatLng> points = [];
+      List<List<LatLng>> allPolygons = [];
 
-      for (var coord in feature['geometry']['coordinates'][0][0]) {
-        points.add(LatLng(coord[1], coord[0]));
+      if (feature['geometry']['type'] == 'Polygon') {
+        List<LatLng> points = [];
+        for (var coord in feature['geometry']['coordinates'][0]) {
+          points.add(LatLng(coord[1], coord[0]));
+        }
+        allPolygons.add(points);
+      } else if (feature['geometry']['type'] == 'MultiPolygon') {
+        for (var polygon in feature['geometry']['coordinates']) {
+          List<LatLng> points = [];
+          for (var coord in polygon[0]) {
+            points.add(LatLng(coord[1], coord[0]));
+          }
+          allPolygons.add(points);
+        }
       }
-      polygons.add(Polygon(
-        points: points,
-        color: _polygonContainsCsvPoint(points)
-            ? Colors.red.withOpacity(0.5)
-            : Colors.blue.withOpacity(0.3),
-        borderStrokeWidth: 2,
-        borderColor: Colors.blue,
-        isFilled: true,
-      ));
+
+      for (var points in allPolygons) {
+        polygons.add(Polygon(
+          points: points,
+          color: _polygonContainsCsvPoint(points)
+              ? Colors.red.withOpacity(0.5)
+              : Colors.blue.withOpacity(0.3),
+          borderStrokeWidth: 2,
+          borderColor: Colors.blue,
+          isFilled: true,
+        ));
+      }
     }
 
     setState(() {
@@ -56,7 +70,6 @@ class _MapPageState extends State<MapPage> {
     final String csvString = await rootBundle.loadString('assets/level2.csv');
     List<List<dynamic>> csvTable = CsvToListConverter().convert(csvString);
 
-    List<Marker> markers = [];
     List<LatLng> csvPoints = [];
 
     for (var row in csvTable) {
@@ -68,26 +81,11 @@ class _MapPageState extends State<MapPage> {
         if (latitude != null && longitude != null) {
           LatLng point = LatLng(latitude, longitude);
           csvPoints.add(point);
-          markers.add(
-            Marker(
-              width: 80.0,
-              height: 80.0,
-              point: point,
-              builder: (ctx) => Container(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                  size: 40.0,
-                ),
-              ),
-            ),
-          );
         }
       }
     }
 
     setState(() {
-      _markers = markers;
       _csvPoints = csvPoints;
     });
   }
@@ -137,9 +135,6 @@ class _MapPageState extends State<MapPage> {
           PolygonLayer(
             polygons: _polygons,
           ),
-          // MarkerLayer(
-          //   markers: _markers,
-          // ),
         ],
       ),
     );

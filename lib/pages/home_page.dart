@@ -25,19 +25,20 @@ class HomePage extends StatelessWidget {
               padding: EdgeInsets.all(10.0),
               shrinkWrap: true,
               children: [
-                _buildGridItem(
-                    context, Icons.assignment, '미션', '/mission', '미션을 수행하세요'),
-                _buildGridItem(context, Icons.quiz, '퀴즈', '/quiz', '퀴즈를 풀어보세요'),
-                _buildGridItem(context, Icons.local_florist, '가든', '/garden',
+                _buildGridItem(context, Icons.assignment, '미션', '/mission',
+                    '일일미션을 수행하고 포인트를 받아가세요'), // 수정된 부분
+                _buildGridItem(context, Icons.quiz, '퀴즈', '/quiz',
+                    '퀴즈를 풀고 포인트를 받아가세요'), // 수정된 부분
+                _buildGridItem(context, Icons.local_florist, '가상 정원', '/garden',
                     '나만의 나무를 키우세요'),
-                _buildGridItem(
-                    context, Icons.store, '상점', '/reward', '나무 키우기 아이템을 구매하세요'),
+                _buildGridItem(context, Icons.store, '상점', '/reward',
+                    '포인트를 사용해 나무 키우기 아이템을 구매하세요'),
                 _buildGridItem(context, Icons.water_damage, '물 사용량',
-                    '/water_usage', '물 사용량을 확인하세요'),
+                    '/water_usage', '오늘 물을 절약했는지 확인하세요'),
+                _buildGridItem(
+                    context, Icons.map, '지도', '/map', '물 위험지수를 확인하세요'), // 지도
                 _buildGridItem(context, Icons.leaderboard, '리더보드',
-                    '/leaderboard', '리더보드를 확인하세요'),
-                _buildGridItem(context, Icons.map, '지도', '/signup',
-                    '지도를 확인하세요'), // 아이콘과 라벨 변경
+                    '/leaderboard', '리더보드를 확인하세요'), // 리더보드
                 _buildGridItem(context, Icons.login, '로그인', '/login', '로그인하세요'),
                 _buildGridItem(
                     context, Icons.person, '프로필', '/profile', '프로필을 확인하세요'),

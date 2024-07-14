@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'dart:math';
+import 'package:geolocator/geolocator.dart'; // geolocator 패키지 임포트
 
 class MapPage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   List<Polygon> _polygons = [];
   List<List<dynamic>> _csvTable = [];
+  LatLng? _currentPosition;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -22,6 +25,7 @@ class _MapPageState extends State<MapPage> {
     _loadCsvData().then((_) {
       _loadGeoJson();
     });
+    _getCurrentLocation();
   }
 
   Future<void> _loadGeoJson() async {
@@ -74,6 +78,40 @@ class _MapPageState extends State<MapPage> {
 
     setState(() {
       _csvTable = csvTable;
+    });
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // 위치 서비스 활성화 여부 확인
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    // 위치 권한 확인
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // 현재 위치 가져오기
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      _currentPosition = LatLng(position.latitude, position.longitude);
+      _mapController.move(_currentPosition!, 14.0); // 현재 위치로 지도 이동
     });
   }
 
@@ -130,10 +168,13 @@ class _MapPageState extends State<MapPage> {
     List<Map<String, dynamic>> waterStressData = [];
     for (var row in _csvTable) {
       if (row[0].toString() == id) {
-        waterStressData.add({
-          "Month": row[1],
-          "WaterStressIndex": row[2],
-        });
+        for (int i = 1; i <= 12; i++) {
+          // assuming months are in columns 2 to 13
+          waterStressData.add({
+            "Month": row[i], // 'Month' 열
+            "WaterStressIndex": row[i + 14], // 'Month' 열에서 14번째 떨어진 열의 값
+          });
+        }
       }
     }
     return waterStressData;
@@ -142,7 +183,7 @@ class _MapPageState extends State<MapPage> {
   void _showWaterStressDialog(LatLng tappedPoint) {
     double minDistance = double.infinity;
     String closestId = "";
-    LatLng closestPoint;
+    LatLng closestPoint = tappedPoint;
 
     for (var row in _csvTable) {
       if (row[0] != 'ID') {
@@ -168,16 +209,40 @@ class _MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("물 스트레스 지수 (ID: $closestId)"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("위도: ${tappedPoint.latitude}"),
-              Text("경도: ${tappedPoint.longitude}"),
-              ...waterStressData.map((entry) {
-                return Text("${entry['Month']}: ${entry['WaterStressIndex']}");
-              }).toList(),
-            ],
+          title: Center(child: Text("물 스트레스 지수")),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("위도: ${tappedPoint.latitude}"),
+                Text("경도: ${tappedPoint.longitude}"),
+                ...waterStressData.map((entry) {
+                  double stressIndex =
+                      double.tryParse(entry['WaterStressIndex'].toString()) ??
+                          0.0;
+                  String month = entry['Month'].toString(); // 'Month' 열 값
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        int.tryParse(month) != null ? '월' : month,
+                        style: TextStyle(
+                          color: stressIndex > 0.5 ? Colors.red : Colors.blue,
+                        ),
+                      ),
+                      Text(
+                        int.tryParse(month) != null
+                            ? "${stressIndex.toStringAsFixed(0)}" // 소수점 제거
+                            : "${stressIndex.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          color: stressIndex > 0.5 ? Colors.red : Colors.blue,
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -199,6 +264,7 @@ class _MapPageState extends State<MapPage> {
         title: Text('지도 페이지'),
       ),
       body: FlutterMap(
+        mapController: _mapController,
         options: MapOptions(
           center: LatLng(36.5, 127.5),
           zoom: 7.0,
@@ -214,6 +280,15 @@ class _MapPageState extends State<MapPage> {
           PolygonLayer(
             polygons: _polygons,
           ),
+          if (_currentPosition != null)
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: _currentPosition!,
+                  builder: (ctx) => Icon(Icons.my_location, color: Colors.red),
+                ),
+              ],
+            ),
         ],
       ),
     );

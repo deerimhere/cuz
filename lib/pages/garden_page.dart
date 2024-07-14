@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
 import '../data.dart';
 import '../models/tree_model.dart';
@@ -15,6 +16,63 @@ class GardenPage extends StatefulWidget {
 
 class _GardenPageState extends State<GardenPage> {
   bool _showHarvestAnimation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstVisit();
+  }
+
+  Future<void> _checkFirstVisit() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isFirstVisit = prefs.getBool('isFirstGardenVisit') ?? true;
+
+    if (isFirstVisit) {
+      _showIntroDialogs();
+      await prefs.setBool('isFirstGardenVisit', false);
+    }
+  }
+
+  void _showIntroDialogs() {
+    List<String> messages = [
+      '가상 정원 페이지에 오신 것을 환영합니다!',
+      '처음에는 씨앗을 심고, 상점에서 물, 비료, 영양제 아이템을 구매하여 사용해 보세요.',
+      '아이템을 사용하여 경험치를 쌓고, 경험치 500마다 진화 아이템을 사용해 나무를 성장시키세요.',
+      '물 아이템: 경험치 +10\n비료 아이템: 경험치 +20\n영양제 아이템: 경험치 +50',
+      '경험치가 500, 1000, 1500, 2000, 2500, 3000에 도달할 때마다 진화 아이템을 사용하여 나무를 진화시킬 수 있습니다.',
+      '레벨 7에 도달하면 나무를 수확할 수 있습니다.'
+    ];
+
+    int currentMessageIndex = 0;
+
+    void showNextDialog() {
+      if (currentMessageIndex < messages.length) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('가상 정원 페이지 안내'),
+              content: Text(messages[currentMessageIndex]),
+              actions: [
+                TextButton(
+                  child: const Text('다음'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    currentMessageIndex++;
+                    if (currentMessageIndex < messages.length) {
+                      showNextDialog();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    showNextDialog();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +149,10 @@ class _GardenPageState extends State<GardenPage> {
                             ],
                             const SizedBox(height: 16),
                             ElevatedButton(
-                              onPressed: _harvest,
+                              onPressed: (treeManager.tree.level == 7 &&
+                                      treeManager.tree.experience == 3500)
+                                  ? _harvest
+                                  : null,
                               child: const Text('수확하기',
                                   style: TextStyle(fontSize: 16)),
                             ),
@@ -139,7 +200,7 @@ class _GardenPageState extends State<GardenPage> {
             if (_showHarvestAnimation)
               Center(
                 child: Lottie.asset(
-                  'assets/animation_harvest.json', // 팡 터지는 애니메이션 파일 경로
+                  'assets/animation_harvest.json',
                   width: 200,
                   height: 200,
                   onLoaded: (composition) {

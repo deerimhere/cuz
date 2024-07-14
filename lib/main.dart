@@ -80,15 +80,15 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/home': (context) => HomePage(), // 홈 경로 추가
+        '/home': (context) => HomePage(),
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
         '/garden': (context) => GardenPage(),
         '/mission': (context) => MissionPage(),
         '/water_usage': (context) => WaterUsagePage(),
-        '/signup': (context) => MapPage(), // 회원가입 경로를 지도 페이지로 변경
+        '/map': (context) => MapPage(), // 지도 페이지 경로 설정
         '/login': (context) => LoginSignupPage(),
-        '/leaderboard': (context) => LeaderboardPage(),
+        '/leaderboard': (context) => LeaderboardPage(), // 리더보드 페이지 경로 설정
         '/profile': (context) => ProfilePage(),
       },
     );

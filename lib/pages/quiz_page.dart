@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../score_manager.dart';
 import 'common_layout.dart';
-import '../data/quiz_data.dart'; // 추가
+import '../data/quiz_data.dart';
 import 'dart:math';
 
 class QuizPage extends StatefulWidget {
@@ -20,12 +21,43 @@ class _QuizPageState extends State<QuizPage> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
   bool showResult = false;
-  bool isAnswering = false; // 추가
+  bool isAnswering = false;
 
   @override
   void initState() {
     super.initState();
     _selectRandomQuestions();
+    _checkFirstVisit();
+  }
+
+  Future<void> _checkFirstVisit() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isFirstVisit = prefs.getBool('isFirstQuizVisit') ?? true;
+
+    if (isFirstVisit) {
+      _showIntroDialog();
+      await prefs.setBool('isFirstQuizVisit', false);
+    }
+  }
+
+  void _showIntroDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('퀴즈 페이지 안내'),
+          content: const Text('물 절약을 위해 문제를 풀고 포인트를 받아가세요!'),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _selectRandomQuestions() {
@@ -42,10 +74,10 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _checkAnswer(String answer) {
-    if (isAnswering) return; // 추가: 중복 터치 방지
+    if (isAnswering) return;
 
     setState(() {
-      isAnswering = true; // 추가: 터치 시작
+      isAnswering = true;
       bool isAnswerCorrect =
           quizzes[selectedQuestions[currentQuestionIndex]][2] == answer;
       showAnimation = true;
@@ -62,7 +94,7 @@ class _QuizPageState extends State<QuizPage> {
     Future.delayed(Duration(milliseconds: 1200), () {
       setState(() {
         showAnimation = false;
-        isAnswering = false; // 추가: 터치 종료
+        isAnswering = false;
         if (answeredQuestions.length < 5) {
           currentQuestionIndex++;
         } else {
@@ -79,7 +111,7 @@ class _QuizPageState extends State<QuizPage> {
 
     showDialog(
       context: context,
-      barrierDismissible: false, // 다이얼로그 밖을 터치해도 닫히지 않도록 설정
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text("퀴즈 결과", textAlign: TextAlign.center),
         content: Text("맞은 문제: $correctAnswers\n틀린 문제: $wrongAnswers",
@@ -87,11 +119,11 @@ class _QuizPageState extends State<QuizPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // 다이얼로그 닫기
+              Navigator.of(context).pop();
               setState(() {
                 showResult = false;
               });
-              Navigator.of(context).pushReplacementNamed('/'); // 홈으로 이동
+              Navigator.of(context).pushReplacementNamed('/');
             },
             child: Text('확인'),
           ),
@@ -114,7 +146,8 @@ class _QuizPageState extends State<QuizPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
+                  if (quizzes.isNotEmpty &&
+                      currentQuestionIndex < quizzes.length)
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
@@ -123,7 +156,8 @@ class _QuizPageState extends State<QuizPage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  if (quizzes.isNotEmpty && currentQuestionIndex < quizzes.length)
+                  if (quizzes.isNotEmpty &&
+                      currentQuestionIndex < quizzes.length)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -146,8 +180,8 @@ class _QuizPageState extends State<QuizPage> {
                   isCorrect
                       ? 'assets/animation_correct.json'
                       : 'assets/animation_wrong.json',
-                  width: isCorrect ? 200 : 100, // 조건에 따라 크기 변경
-                  height: isCorrect ? 200 : 100, // 조건에 따라 크기 변경
+                  width: isCorrect ? 200 : 100,
+                  height: isCorrect ? 200 : 100,
                   animate: true,
                 ),
               ),

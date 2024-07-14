@@ -19,6 +19,7 @@ class _GardenPageState extends State<GardenPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
+<<<<<<< HEAD
   void initState() {
     super.initState();
     _checkFirstVisit();
@@ -82,6 +83,8 @@ class _GardenPageState extends State<GardenPage> {
   }
 
   @override
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
   Widget build(BuildContext context) {
     return CommonLayout(
       child: Scaffold(
@@ -156,10 +159,7 @@ class _GardenPageState extends State<GardenPage> {
                             ],
                             const SizedBox(height: 16),
                             ElevatedButton(
-                              onPressed: (treeManager.tree.level == 7 &&
-                                      treeManager.tree.experience == 3500)
-                                  ? _harvest
-                                  : null,
+                              onPressed: _harvest,
                               child: const Text('수확하기',
                                   style: TextStyle(fontSize: 16)),
                             ),
@@ -207,7 +207,7 @@ class _GardenPageState extends State<GardenPage> {
             if (_showHarvestAnimation)
               Center(
                 child: Lottie.asset(
-                  'assets/animation_harvest.json',
+                  'assets/animation_harvest.json', // 팡 터지는 애니메이션 파일 경로
                   width: 200,
                   height: 200,
                   onLoaded: (composition) {

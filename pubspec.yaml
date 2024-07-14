@@ -20,10 +20,13 @@ dependencies:
   lottie: ^1.2.1
   shared_preferences: ^2.0.6
   provider: ^6.0.0
-  flutter_map: ^3.1.0
-  latlong2: ^0.8.1
+  flutter_map: ^3.1.0  # 추가된 항목
+  latlong2: ^0.8.1  # 추가된 항목
   csv: ^5.0.0
+<<<<<<< HEAD
   geolocator: ^8.2.1
+=======
+>>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 
 dev_dependencies:
   flutter_test:
@@ -46,7 +49,7 @@ flutter:
     - assets/images/level7.png
     - assets/animation_harvest.json
     - assets/background.jpg
-    - assets/gadm41_KOR_2.json
+    - assets/gadm41_KOR_2.json  # 추가된 항목
     - assets/level2.csv
   fonts:
     - family: BMHANNA

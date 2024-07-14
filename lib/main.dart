@@ -87,13 +87,13 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/home': (context) => HomePage(),
+        '/home': (context) => HomePage(), // 홈 경로 추가
         '/quiz': (context) => QuizPage(),
         '/reward': (context) => RewardPage(),
         '/garden': (context) => GardenPage(),
         '/mission': (context) => MissionPage(),
         '/water_usage': (context) => WaterUsagePage(),
-        '/map': (context) => MapPage(), // 지도 페이지 경로 설정
+        '/signup': (context) => MapPage(), // 회원가입 경로를 지도 페이지로 변경
         '/login': (context) => LoginSignupPage(),
         '/leaderboard': (context) => LeaderboardPage(),
         '/profile': (context) => ProfilePage(),

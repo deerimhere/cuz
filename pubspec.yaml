@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: ^2.5.2  # 추가된 항목
+  firebase_auth: ^4.4.1  # 추가된 항목
+  cloud_firestore: ^4.17.5
   sqflite: ^2.2.8
   mysql_client: ^0.0.27
   cupertino_icons: ^1.0.6
@@ -20,7 +23,7 @@ dependencies:
   flutter_map: ^3.1.0
   latlong2: ^0.8.1
   csv: ^5.0.0
-  geolocator: ^8.2.1  # 추가된 항목
+  geolocator: ^8.2.1
 
 dev_dependencies:
   flutter_test:

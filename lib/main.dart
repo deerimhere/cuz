@@ -1,5 +1,8 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'score_manager.dart';
 import 'data.dart';
 import 'models/tree_model.dart';
@@ -13,9 +16,13 @@ import 'pages/leaderboard_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/login_page.dart';
 import 'pages/map_page.dart'; // 지도 페이지 임포트
+import 'firebase_options.dart'; // Firebase 옵션 임포트
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Firebase 초기화 옵션
+  );
 
   final scoreManager = ScoreManager();
   await scoreManager.setPoints(10000); // 초기화 시 10000 포인트 설정
@@ -88,7 +95,7 @@ class MyApp extends StatelessWidget {
         '/water_usage': (context) => WaterUsagePage(),
         '/map': (context) => MapPage(), // 지도 페이지 경로 설정
         '/login': (context) => LoginSignupPage(),
-        '/leaderboard': (context) => LeaderboardPage(), // 리더보드 페이지 경로 설정
+        '/leaderboard': (context) => LeaderboardPage(),
         '/profile': (context) => ProfilePage(),
       },
     );

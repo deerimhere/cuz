@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginSignupPage extends StatefulWidget {
   @override
@@ -21,11 +21,37 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   String _errorMessage = '';
 
   Future<void> _login() async {
-    // 로그인 로직
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _loginUsernameController.text,
+        password: _loginPasswordController.text,
+      );
+      setState(() {
+        _errorMessage = '';
+      });
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   Future<void> _signup() async {
-    // 회원가입 로직
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _signupUsernameController.text,
+        password: _signupPasswordController.text,
+      );
+      setState(() {
+        _errorMessage = '';
+      });
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   @override
@@ -56,10 +82,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         children: <Widget>[
           TextFormField(
             controller: _loginUsernameController,
-            decoration: InputDecoration(labelText: '사용자 이름'),
+            decoration: InputDecoration(labelText: '이메일'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '사용자 이름을 입력해주세요';
+                return '이메일을 입력해주세요';
               }
               return null;
             },
@@ -100,10 +126,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         children: <Widget>[
           TextFormField(
             controller: _signupUsernameController,
-            decoration: InputDecoration(labelText: '사용자 이름'),
+            decoration: InputDecoration(labelText: '이메일'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '사용자 이름을 입력해주세요';
+                return '이메일을 입력해주세요';
               }
               return null;
             },

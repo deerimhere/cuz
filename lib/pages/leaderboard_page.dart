@@ -1,122 +1,145 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../score_manager.dart';
-import 'common_layout.dart';
-import '../user_score.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LeaderboardPage extends StatefulWidget {
-  const LeaderboardPage({Key? key}) : super(key: key);
-
   @override
   _LeaderboardPageState createState() => _LeaderboardPageState();
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
-  @override
-  void initState() {
-    super.initState();
-    // 데이터를 초기화하는 메서드 호출
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ScoreManager>(context, listen: false).generateMockData();
-    });
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<List<Map<String, dynamic>>> _fetchTopUsers() async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .orderBy('score', descending: true)
+        .limit(3)
+        .get();
+
+    return querySnapshot.docs
+        .map((doc) => {"name": doc["name"], "score": doc["score"]})
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final scoreManager = Provider.of<ScoreManager>(context);
-
-    List<UserScore> leaderboard = scoreManager.getLeaderboard();
-    leaderboard.sort((a, b) {
-      int result = b.apples.compareTo(a.apples);
-      if (result == 0) {
-        result = b.points.compareTo(a.points);
-      }
-      return result;
-    });
-
-    return CommonLayout(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('리더보드'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Top 3 Users',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              _buildPodium(leaderboard),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: leaderboard.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        leading: Text('${index + 1}',
-                            style: TextStyle(fontSize: 18)),
-                        title: Text(leaderboard[index].nickname,
-                            style: TextStyle(fontSize: 18)),
-                        subtitle: Text('Apples: ${leaderboard[index].apples}',
-                            style: TextStyle(fontSize: 14)),
-                        trailing: Text('${leaderboard[index].points} points',
-                            style: TextStyle(fontSize: 18)),
-                      ),
-                    );
-                  },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('리더보드'),
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _fetchTopUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('오류가 발생했습니다.'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('데이터가 없습니다.'));
+          } else {
+            List<Map<String, dynamic>> topUsers = snapshot.data!;
+            return Column(
+              children: [
+                _buildPodium(topUsers),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: topUsers.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          child: Text('${index + 1}'),
+                        ),
+                        title: Text(topUsers[index]['name']),
+                        trailing: Text('점수: ${topUsers[index]['score']}'),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget _buildPodium(List<UserScore> leaderboard) {
-    if (leaderboard.length < 3) {
-      return Center(child: Text('Not enough data'));
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        _buildPodiumPlace(leaderboard[1], 2, Colors.grey, 60),
-        _buildPodiumPlace(leaderboard[0], 1, Colors.yellow, 80),
-        _buildPodiumPlace(leaderboard[2], 3, Colors.brown, 50), // 3등을 더 낮게 설정
-      ],
-    );
-  }
-
-  Widget _buildPodiumPlace(
-      UserScore user, int place, Color color, double height) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CircleAvatar(
-          backgroundColor: color,
-          radius: 40,
-          child: Text(
-            place.toString(),
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(user.nickname, style: TextStyle(fontSize: 18)),
-        Text('Apples: ${user.apples}', style: TextStyle(fontSize: 16)),
-        Text('${user.points} points', style: TextStyle(fontSize: 16)),
-        Container(
-          height: height,
-          width: 60,
-          color: color.withOpacity(0.3),
-        ),
-      ],
+  Widget _buildPodium(List<Map<String, dynamic>> topUsers) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          if (topUsers.length > 1)
+            Column(
+              children: [
+                Text(
+                  '2등',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 100,
+                  width: 60,
+                  color: Colors.grey,
+                  child: Center(
+                    child: Text(
+                      topUsers[1]['name'],
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text('점수: ${topUsers[1]['score']}'),
+              ],
+            ),
+          if (topUsers.length > 0)
+            Column(
+              children: [
+                Text(
+                  '1등',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 120,
+                  width: 60,
+                  color: Colors.yellow,
+                  child: Center(
+                    child: Text(
+                      topUsers[0]['name'],
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text('점수: ${topUsers[0]['score']}'),
+              ],
+            ),
+          if (topUsers.length > 2)
+            Column(
+              children: [
+                Text(
+                  '3등',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 80,
+                  width: 60,
+                  color: Colors.brown,
+                  child: Center(
+                    child: Text(
+                      topUsers[2]['name'],
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text('점수: ${topUsers[2]['score']}'),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

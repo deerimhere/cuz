@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "252990048363",
+    "project_id": "watersavingchallenge",
+    "storage_bucket": "watersavingchallenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252990048363:android:00cb0e518f17762325492e",
+        "android_client_info": {
+          "package_name": "com.example.my_flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoZx20b9iQmAIbrcIMaxwqTEPS49Oqhrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

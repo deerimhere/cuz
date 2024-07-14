@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
+import 'dart:math';
 
 class MapPage extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   List<Polygon> _polygons = [];
-  List<LatLng> _csvPoints = [];
+  List<List<dynamic>> _csvTable = [];
 
   @override
   void initState() {
@@ -49,9 +50,10 @@ class _MapPageState extends State<MapPage> {
       }
 
       for (var points in allPolygons) {
+        bool containsCsvPoint = _polygonContainsCsvPoint(points);
         polygons.add(Polygon(
           points: points,
-          color: _polygonContainsCsvPoint(points)
+          color: containsCsvPoint
               ? Colors.red.withOpacity(0.5)
               : Colors.blue.withOpacity(0.3),
           borderStrokeWidth: 2,
@@ -70,30 +72,23 @@ class _MapPageState extends State<MapPage> {
     final String csvString = await rootBundle.loadString('assets/level2.csv');
     List<List<dynamic>> csvTable = CsvToListConverter().convert(csvString);
 
-    List<LatLng> csvPoints = [];
+    setState(() {
+      _csvTable = csvTable;
+    });
+  }
 
-    for (var row in csvTable) {
-      if (row[0] != 'Latitude') {
-        // Assuming first row is header
+  bool _polygonContainsCsvPoint(List<LatLng> polygonPoints) {
+    for (var row in _csvTable) {
+      if (row[0] != 'ID') {
         final latitude = double.tryParse(row[5].toString());
         final longitude = double.tryParse(row[6].toString());
 
         if (latitude != null && longitude != null) {
           LatLng point = LatLng(latitude, longitude);
-          csvPoints.add(point);
+          if (_pointInPolygon(point, polygonPoints)) {
+            return true;
+          }
         }
-      }
-    }
-
-    setState(() {
-      _csvPoints = csvPoints;
-    });
-  }
-
-  bool _polygonContainsCsvPoint(List<LatLng> polygonPoints) {
-    for (var point in _csvPoints) {
-      if (_pointInPolygon(point, polygonPoints)) {
-        return true;
       }
     }
     return false;
@@ -116,6 +111,87 @@ class _MapPageState extends State<MapPage> {
     return (intersectCount % 2) == 1;
   }
 
+  double _calculateDistance(LatLng point1, LatLng point2) {
+    const R = 6371e3; // metres
+    double phi1 = point1.latitude * pi / 180;
+    double phi2 = point2.latitude * pi / 180;
+    double deltaPhi = (point2.latitude - point1.latitude) * pi / 180;
+    double deltaLambda = (point2.longitude - point1.longitude) * pi / 180;
+
+    double a = sin(deltaPhi / 2) * sin(deltaPhi / 2) +
+        cos(phi1) * cos(phi2) * sin(deltaLambda / 2) * sin(deltaLambda / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    double d = R * c;
+    return d;
+  }
+
+  List<Map<String, dynamic>> _getMonthlyWaterStress(String id) {
+    List<Map<String, dynamic>> waterStressData = [];
+    for (var row in _csvTable) {
+      if (row[0].toString() == id) {
+        waterStressData.add({
+          "Month": row[1],
+          "WaterStressIndex": row[2],
+        });
+      }
+    }
+    return waterStressData;
+  }
+
+  void _showWaterStressDialog(LatLng tappedPoint) {
+    double minDistance = double.infinity;
+    String closestId = "";
+    LatLng closestPoint;
+
+    for (var row in _csvTable) {
+      if (row[0] != 'ID') {
+        final latitude = double.tryParse(row[5].toString());
+        final longitude = double.tryParse(row[6].toString());
+
+        if (latitude != null && longitude != null) {
+          LatLng point = LatLng(latitude, longitude);
+          double distance = _calculateDistance(tappedPoint, point);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestId = row[0].toString();
+            closestPoint = point;
+          }
+        }
+      }
+    }
+
+    List<Map<String, dynamic>> waterStressData =
+        _getMonthlyWaterStress(closestId);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("물 스트레스 지수 (ID: $closestId)"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("위도: ${tappedPoint.latitude}"),
+              Text("경도: ${tappedPoint.longitude}"),
+              ...waterStressData.map((entry) {
+                return Text("${entry['Month']}: ${entry['WaterStressIndex']}");
+              }).toList(),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text("닫기"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,6 +202,9 @@ class _MapPageState extends State<MapPage> {
         options: MapOptions(
           center: LatLng(36.5, 127.5),
           zoom: 7.0,
+          onTap: (tapPosition, point) {
+            _showWaterStressDialog(point);
+          },
         ),
         children: [
           TileLayer(

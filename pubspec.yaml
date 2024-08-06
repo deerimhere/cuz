@@ -23,10 +23,7 @@ dependencies:
   flutter_map: ^3.1.0  # 추가된 항목
   latlong2: ^0.8.1  # 추가된 항목
   csv: ^5.0.0
-<<<<<<< HEAD
   geolocator: ^8.2.1
-=======
->>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 
 dev_dependencies:
   flutter_test:

@@ -3,13 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-<<<<<<< HEAD
   cloud_firestore
   firebase_auth
   firebase_core
   geolocator_windows
-=======
->>>>>>> parent of 611a8ca (UI바꾸기 전 최종수정)
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

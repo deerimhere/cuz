@@ -23,7 +23,7 @@ dependencies:
   flutter_map: ^3.1.0  # 추가된 항목
   latlong2: ^0.8.1  # 추가된 항목
   csv: ^5.0.0
-  geolocator: ^8.2.1
+  # geolocator: ^8.2.1
 
 dev_dependencies:
   flutter_test:
